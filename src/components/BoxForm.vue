@@ -6,57 +6,41 @@
         role="form"
         aria-label="Formulário de criação de nova tarefa"
       >
-        <input type="text" class="input" placeholder="Nome da tarefa" />
+        <input
+          type="text"
+          v-model="taskName"
+          class="input"
+          placeholder="Nome da tarefa"
+        />
       </div>
       <div class="column">
-        <div
-          class="is-flex is-align-items-center is-justify-content-space-between"
-        >
-          <section>
-            <strong>{{ timeRunning }}</strong>
-          </section>
-          <button @click="start" class="button">
-            <span class="icon">
-              <i class="fas fa-play"></i>
-            </span>
-            <span>play</span>
-          </button>
-          <button @click="stop" class="button">
-            <span class="icon">
-              <i class="fas fa-stop"></i>
-            </span>
-            <span>stop</span>
-          </button>
-        </div>
+        <TimerBar @toStopCountDown="closeTask" />
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import TimerBar from "./TimerBar.vue";
 export default defineComponent({
   name: "BoxForm",
+  components: {
+    TimerBar,
+  },
+  emits: ["toTaskSave"],
+  methods: {
+    closeTask(totalTime: number): void {
+      this.$emit("toTaskSave", {
+        taskCountdown: totalTime,
+        taskName: this.taskName,
+      });
+      this.taskName = "";
+    },
+  },
   data() {
     return {
-      timeInSeconds: 0,
+      taskName: "",
     };
-  },
-  computed: {
-    timeRunning(): string {
-      return new Date(this.timeInSeconds * 1000).toISOString().substr(11, 8);
-    },
-  },
-  methods: {
-    start() {
-      setInterval(() => {
-        console.log("contando...");
-        this.timeInSeconds += 1;
-      }, 1000);
-      console.log("started...");
-    },
-    stop() {
-      console.log("stopped...");
-    },
   },
 });
 </script>
